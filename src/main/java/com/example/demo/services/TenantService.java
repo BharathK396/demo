@@ -9,6 +9,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.config.DataSourceBasedMultiTenantConnectionProvider;
@@ -24,7 +25,9 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class TenantService {
-    @Autowired private DataSource dataSource;
+    @Autowired
+    @Qualifier("masterDataSource")
+    private DataSource dataSource;
     @Autowired private MasterTenantRepository masterRepo;
     @Autowired private TenantRepository tenantRepo;
     @Autowired private ClientRepository clientRepo;

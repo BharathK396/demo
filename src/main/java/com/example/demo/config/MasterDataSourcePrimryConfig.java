@@ -72,31 +72,29 @@ import jakarta.persistence.EntityManagerFactory;
     entityManagerFactoryRef = "masterEntityManagerFactory",
     transactionManagerRef = "masterTransactionManager"
 )
-public class MasterDataSourceConfig {
+public class MasterDataSourcePrimryConfig {
 
-    @Primary
-    @Bean
+    @Bean(name = "masterDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.master")
     public DataSource masterDataSource() {
         return DataSourceBuilder.create().build();
     }
 
-    @Primary
-    @Bean
+    @Bean(name = "masterEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean masterEntityManagerFactory(
-            EntityManagerFactoryBuilder builder) {
+            EntityManagerFactoryBuilder builder,
+            @Qualifier("masterDataSource") DataSource masterDataSource) {
     	Map<String, Object> properties = new HashMap<>();
     	properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         return builder
-                .dataSource(masterDataSource())
+                .dataSource(masterDataSource)
                 .packages("com.example.demo.master.entity")
                 .persistenceUnit("master")
                 .properties(properties)
                 .build();
     }
 
-    @Primary
-    @Bean
+    @Bean(name = "masterTransactionManager")
     public PlatformTransactionManager masterTransactionManager(
             @Qualifier("masterEntityManagerFactory") EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
